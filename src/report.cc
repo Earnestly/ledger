@@ -901,6 +901,17 @@ value_t report_t::fn_to_sequence(call_scope_t& args) {
   return args[0].to_sequence();
 }
 
+value_t report_t::fn_env(call_scope_t& args) {
+  if (args.has<string>(0)) {
+    const char* env = std::getenv(args.get<string>(0).c_str());
+    if (env)
+      return string_value(env);
+    else
+      throw_(std::runtime_error, _f("No such environment %1%") % args.get<string>(0));
+  } else
+      throw_(std::runtime_error, _f("Too few arguments to function"));
+}
+
 namespace {
 value_t fn_black(call_scope_t&) {
   return string_value("black");
@@ -1320,6 +1331,11 @@ expr_t::ptr_op_t report_t::lookup(const symbol_t::kind_t kind, const string& nam
         return MAKE_FUNCTOR(report_t::fn_display_total);
       else if (is_eq(p, "date"))
         return MAKE_FUNCTOR(report_t::fn_today);
+      break;
+
+    case 'e':
+      if (is_eq(p, "env"))
+        return MAKE_FUNCTOR(report_t::fn_env);
       break;
 
     case 'f':

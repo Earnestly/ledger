@@ -196,6 +196,7 @@ public:
   value_t fn_to_mask(call_scope_t& scope);
   value_t fn_to_sequence(call_scope_t& scope);
   value_t fn_averaged_lots(call_scope_t& scope);
+  value_t fn_env(call_scope_t& scope);
 
   value_t fn_now(call_scope_t&) { return terminus; }
   value_t fn_today(call_scope_t&) { return terminus.date(); }
