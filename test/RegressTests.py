@@ -49,6 +49,7 @@ class RegressFile(object):
     def read_test(self):
         class Test:
             command =  None
+            environ =  None
             output =   None
             error =    None
             exitcode = 0
@@ -68,6 +69,9 @@ class RegressFile(object):
                 else:
                     test.command = command
                 in_output = True
+
+            if line.startswith("env "):
+                test.environ = line[4:].rstrip('\r\n').split("=", 1)
 
             elif in_output:
                 if line.startswith("end test"):
@@ -111,7 +115,7 @@ class RegressFile(object):
         else:
             test.command = f'$ledger -f "{str(self.filename.resolve())}" {test.command}'
 
-        p = harness.run(test.command,
+        p = harness.run(test.command, environ=test.environ,
                         columns=(not re.search(r'--columns', test.command)))
 
         if use_stdin:

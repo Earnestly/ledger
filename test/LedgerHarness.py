@@ -64,7 +64,7 @@ class LedgerHarness:
         self.gmalloc    = gmalloc
         self.python     = python
 
-    def run(self, command, verify=None, gmalloc=None, columns=True):
+    def run(self, command, environ=None, verify=None, gmalloc=None, columns=True):
         env = os.environ.copy()
 
         if (gmalloc is not None and gmalloc) or \
@@ -78,6 +78,9 @@ class LedgerHarness:
             env['MALLOC_PROTECT_BEFORE'] = '1'
             env['MALLOC_FILL_SPACE']     = '1'
             env['MALLOC_STRICT_SIZE']    = '1'
+
+        if environ and len(environ) == 2:
+            env[environ[0]] = environ[1]
 
         cmd = [str(self.ledger), '--args-only']
         if (verify is not None and verify) or \
