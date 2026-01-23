@@ -11,7 +11,10 @@ import tempfile
 
 multiproc = False
 try:
-    from multiprocessing import Pool
+    from platform import system
+    from multiprocessing.pool import Pool
+    from multiprocessing import get_context
+
     multiproc = True
 except:
     pass
@@ -202,10 +205,13 @@ def do_test(path):
     entry.close()
 
 if __name__ == '__main__':
+    pool = None
+
     if multiproc:
-        pool = Pool(args.jobs*2)
-    else:
-        pool = None
+        if system() == 'Linux':
+            pool = Pool(processes=args.jobs*2, context=get_context('fork'))
+        else:
+            pool = Pool(processes=args.jobs*2)
 
     if args.tests.is_dir():
         tests = [p for p in args.tests.iterdir()
